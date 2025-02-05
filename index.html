@@ -3,9 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>Export to Word</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.2/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-saver/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.0.0/build/index.min.js"></script>
 </head>
 <body>
-   WELCOME TO SYNERGIZE
+    <div>
+        <h2>Input Nama dan NPM</h2>
+        <p>Nama: <input type="text" id="name" value="RIVAN ALFATONI"></p>
+        <p>NPM: <input type="text" id="npm" value="G1F024047"></p>
+
+        <h3>Input Gambar</h3>
+        <input type="file" id="fileInput" multiple accept="image/*">
+        <br><br>
+
+        <button onclick="downloadWord()">Download as Word</button>
+    </div>
+
+    <script>
+        function downloadWord() {
+            // Ambil nama dan NPM
+            const name = document.getElementById('name').value;
+            const npm = document.getElementById('npm').value;
+
+            // Ambil gambar yang diupload
+            const files = document.getElementById('fileInput').files;
+            
+            if (files.length === 0) {
+                alert("Please upload at least one image.");
+                return;
+            }
+
+            // Membuat dokumen Word menggunakan docx.js
+            const doc = new docx.Document({
+                sections: [
+                    {
+                        properties: {},
+                        children: [
+                            new docx.Paragraph({
+                                text: name,
+                                heading: docx.HeadingLevel.HEADING_1
+                            }),
+                            new docx.Paragraph({
+                                text: npm,
+                                heading: docx.HeadingLevel.HEADING_2
+                            }),
+                            new docx.Paragraph({
+                                text: "Gambar-Gambar: "
+                            })
+                        ]
+                    }
+                ]
+            });
+
+            // Fungsi untuk menambahkan gambar setelah diproses
+            function addImagesToDocument(fileIndex) {
+                if (fileIndex >= files.length) {
+                    // Setelah semua gambar diproses, simpan file Word
+                    const packer = new docx.Packer();
+                    packer.toBlob(doc).then((blob) => {
+                        saveAs(blob, 'Document_with_images.docx');
+                    });
+                    return;
+                }
+
+                const file = files[fileIndex];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    const imgData = event.target.result;
+                    const image = new docx.ImageRun({
+                        data: imgData,
+                        transformation: {
+                            width: 300,
+                            height: 300
+                        }
+                    });
+
+                    doc.addSection({
+                        children: [
+                            new docx.Paragraph({
+                                children: [image]
+                            })
+                        ]
+                    });
+
+                    // Panggil fungsi untuk gambar berikutnya
+                    addImagesToDocument(fileIndex + 1);
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            // Mulai proses gambar pertama
+            addImagesToDocument(0);
+        }
+    </script>
 </body>
 </html>
