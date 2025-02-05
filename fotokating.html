@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeri Foto 4x6 - NPM Berbeda Setiap Foto</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      min-height: 100vh;
+    }
+    /* Styling input file */
+    #fileInput {
+      margin: 10px auto;
+    }
+    /* Tabel galeri */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+    td {
+      width: 25%; /* 4 foto per baris */
+      padding: 10px;
+      vertical-align: top;
+      text-align: center;
+    }
+    /* Container untuk foto dan caption (tanpa border) */
+    .photo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* Ukuran foto 4x6 cm */
+    .photo-container img {
+      width: 4cm;
+      height: 6cm;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      display: block;
+    }
+    /* Input caption (NPM) */
+    .caption-input {
+      margin-top: 4px;
+      font-size: 14px;
+      width: 4cm;
+      box-sizing: border-box;
+    }
+    /* Caption tampilan untuk mode print */
+    .caption-display {
+      margin-top: 4px;
+      font-size: 14px;
+      display: none; /* disembunyikan pada tampilan layar */
+      width: 4cm;
+      word-break: break-all;
+    }
+    .pagination {
+      margin: 20px 0;
+    }
+    .pagination button {
+      padding: 10px 20px;
+      margin: 0 5px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+    .pagination button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    @media print {
+      /* Sembunyikan input file dan tombol print saat mencetak */
+      #fileInput,
+      .pagination {
+        display: none;
+      }
+      /* Saat print, sembunyikan input caption dan tampilkan caption display */
+      .caption-input {
+        display: none;
+      }
+      .caption-display {
+        display: block;
+      }
+      table {
+        margin-top: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Input file gambar -->
+  <input type="file" id="fileInput" multiple accept="image/*">
+
+  <!-- Tabel untuk menampilkan foto 4x6 dengan input NPM berbeda -->
+  <table id="imageTable"></table>
+
+  <!-- Tombol print -->
+  <div class="pagination">
+    <button onclick="window.print()">Print</button>
+  </div>
+
+  <script>
+    // Fungsi untuk mengupdate caption (NPM) untuk foto tertentu
+    function updateCaption(input) {
+      // Update elemen caption-display yang merupakan saudara langsung input
+      const captionDisplay = input.nextElementSibling;
+      captionDisplay.textContent = input.value || "NPM";
+    }
+
+    let images = [];
+
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      images = Array.from(event.target.files);
+      renderImages();
+    });
+
+    function renderImages() {
+      const table = document.getElementById('imageTable');
+      table.innerHTML = ''; // Bersihkan tabel sebelum mengisi ulang
+      let row;
+
+      images.forEach((file, index) => {
+        if (index % 4 === 0) {
+          row = table.insertRow();
+        }
+        const cell = row.insertCell();
+
+        // Buat container untuk foto dan caption
+        const container = document.createElement('div');
+        container.className = 'photo-container';
+
+        // Elemen gambar
+        const img = document.createElement('img');
+
+        // Input untuk memasukkan NPM (caption)
+        const captionInput = document.createElement('input');
+        captionInput.type = 'text';
+        captionInput.className = 'caption-input';
+        captionInput.placeholder = 'Masukkan NPM';
+        captionInput.oninput = function() { updateCaption(this); };
+
+        // Elemen <p> untuk menampilkan caption pada mode print
+        const captionDisplay = document.createElement('p');
+        captionDisplay.className = 'caption-display';
+        captionDisplay.textContent = 'NPM';
+
+        // Baca file gambar menggunakan FileReader
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+
+        // Tambahkan elemen ke dalam container
+        container.appendChild(img);
+        container.appendChild(captionInput);
+        container.appendChild(captionDisplay);
+
+        // Tambahkan container ke dalam cell tabel
+        cell.appendChild(container);
+      });
+    }
+  </script>
+</body>
+</html>
