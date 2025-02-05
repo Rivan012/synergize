@@ -1,104 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Export to Word</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.2/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/file-saver/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@7.0.0/build/index.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeri Gambar 4x3 (Ukuran Gambar 9cm)</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      height: 100vh;
+    }
+    .header {
+      text-align: left;
+      margin-left: 20px;
+      font-family: 'Times New Roman', Times, serif; /* Font Times New Roman */
+      margin-top: 0; /* Tidak ada jarak dari atas */
+      margin-bottom: 0; /* Tidak ada jarak di bawah header */
+    }
+    /* Menghilangkan margin default dari elemen <p> di dalam header-display */
+    .header-display p {
+      margin: 0;
+    }
+    /* Styling untuk input agar menyerupai teks header */
+    .header-input input {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 18px;
+      border: none;
+      outline: none;
+      background: transparent;
+      margin-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      margin-top: 0; /* Tidak ada jarak di atas tabel */
+    }
+    td {
+      width: 25%; /* Membagi setiap kolom 1/4 untuk 4 kolom */
+      padding: 0; /* Tidak ada padding di dalam sel */
+      text-align: center;
+    }
+    img {
+      height: 9cm; /* Ukuran gambar 9cm */
+      width: auto;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      display: block; /* Menghilangkan jarak di bawah gambar */
+    }
+    .pagination {
+      margin: 20px 0;
+    }
+    .pagination button {
+      padding: 10px 20px;
+      margin: 0 5px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+    .pagination button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      /* Menyembunyikan input header, input file, dan tombol pagination saat print */
+      .header-input,
+      #fileInput,
+      .pagination {
+        display: none;
+      }
+      table {
+        width: 100%;
+        margin-top: 0;
+      }
+      img {
+        height: 8cm; /* Ukuran gambar disesuaikan untuk print */
+        width: auto;
+        object-fit: cover;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div>
-        <h2>Input Nama dan NPM</h2>
-        <p>Nama: <input type="text" id="name" value="RIVAN ALFATONI"></p>
-        <p>NPM: <input type="text" id="npm" value="G1F024047"></p>
-
-        <h3>Input Gambar</h3>
-        <input type="file" id="fileInput" multiple accept="image/*">
-        <br><br>
-
-        <button onclick="downloadWord()">Download as Word</button>
+  <!-- Bagian Header untuk menampilkan nama dan NPM -->
+  <div class="header">
+    <!-- Tampilan header yang akan muncul saat print -->
+    <div class="header-display">
+      <p id="displayName">Nama</p>
+      <p id="displayNPM">NPM</p>
     </div>
-
-    <script>
-        function downloadWord() {
-            // Ambil nama dan NPM
-            const name = document.getElementById('name').value;
-            const npm = document.getElementById('npm').value;
-
-            // Ambil gambar yang diupload
-            const files = document.getElementById('fileInput').files;
-            
-            if (files.length === 0) {
-                alert("Please upload at least one image.");
-                return;
-            }
-
-            // Membuat dokumen Word menggunakan docx.js
-            const doc = new docx.Document({
-                sections: [
-                    {
-                        properties: {},
-                        children: [
-                            new docx.Paragraph({
-                                text: name,
-                                heading: docx.HeadingLevel.HEADING_1
-                            }),
-                            new docx.Paragraph({
-                                text: npm,
-                                heading: docx.HeadingLevel.HEADING_2
-                            }),
-                            new docx.Paragraph({
-                                text: "Gambar-Gambar: "
-                            })
-                        ]
-                    }
-                ]
-            });
-
-            // Fungsi untuk menambahkan gambar setelah diproses
-            function addImagesToDocument(fileIndex) {
-                if (fileIndex >= files.length) {
-                    // Setelah semua gambar diproses, simpan file Word
-                    const packer = new docx.Packer();
-                    packer.toBlob(doc).then((blob) => {
-                        saveAs(blob, 'Document_with_images.docx');
-                    });
-                    return;
-                }
-
-                const file = files[fileIndex];
-                const reader = new FileReader();
-                
-                reader.onload = function(event) {
-                    const imgData = event.target.result;
-                    const image = new docx.ImageRun({
-                        data: imgData,
-                        transformation: {
-                            width: 300,
-                            height: 300
-                        }
-                    });
-
-                    doc.addSection({
-                        children: [
-                            new docx.Paragraph({
-                                children: [image]
-                            })
-                        ]
-                    });
-
-                    // Panggil fungsi untuk gambar berikutnya
-                    addImagesToDocument(fileIndex + 1);
-                };
-
-                reader.readAsDataURL(file);
-            }
-
-            // Mulai proses gambar pertama
-            addImagesToDocument(0);
+    <!-- Input agar pengguna dapat memasukkan nama dan NPM -->
+    <div class="header-input">
+      <input type="text" id="nameInput" placeholder="Masukkan Nama" oninput="updateHeaderDisplay()">
+      <input type="text" id="npmInput" placeholder="Masukkan NPM" oninput="updateHeaderDisplay()">
+    </div>
+  </div>
+  
+  <!-- Input file gambar -->
+  <input type="file" id="fileInput" multiple accept="image/*">
+  
+  <!-- Tabel untuk menampilkan gambar -->
+  <table id="imageTable"></table>
+  
+  <!-- Tombol print -->
+  <div class="pagination">
+    <button onclick="window.print()">Print</button>
+  </div>
+  
+  <script>
+    // Fungsi untuk mengupdate tampilan header berdasarkan input
+    function updateHeaderDisplay() {
+      const name = document.getElementById('nameInput').value;
+      const npm = document.getElementById('npmInput').value;
+      document.getElementById('displayName').textContent = name || 'Nama';
+      document.getElementById('displayNPM').textContent = npm || 'NPM';
+    }
+    
+    let images = [];
+    
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      images = Array.from(event.target.files);
+      renderImages();
+    });
+    
+    function renderImages() {
+      const table = document.getElementById('imageTable');
+      table.innerHTML = ''; // Bersihkan tabel sebelum mengisi ulang
+      
+      let row;
+      images.forEach((file, index) => {
+        if (index % 4 === 0) {
+          row = table.insertRow(); // Buat baris baru setelah setiap 4 gambar
         }
-    </script>
+        
+        const cell = row.insertCell();
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          cell.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
 </body>
 </html>
