@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Galeri Gambar 4x3 (Ukuran Gambar 9cm)</title>
   <style>
     body {
@@ -22,11 +22,9 @@
       margin-top: 0;
       margin-bottom: 0;
     }
-    /* Menghilangkan margin default dari elemen <p> di dalam header-display */
     .header-display p {
       margin: 0;
     }
-    /* Styling untuk input agar menyerupai teks header */
     .header-input input {
       font-family: 'Times New Roman', Times, serif;
       font-size: 18px;
@@ -42,7 +40,7 @@
       margin-top: 0;
     }
     td {
-      width: 25%; /* Membagi setiap kolom 1/4 untuk 4 kolom */
+      width: 25%;
       padding: 0;
       text-align: center;
       vertical-align: top;
@@ -51,7 +49,6 @@
       height: 9cm;
       width: auto;
       object-fit: cover;
-
       display: block;
     }
     .pagination {
@@ -69,12 +66,23 @@
       background-color: #ccc;
       cursor: not-allowed;
     }
+    /* Watermark styling */
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 50px;
+      font-family: Arial, sans-serif;
+      color: rgba(0, 0, 0, 0.1);
+      pointer-events: none;
+      z-index: 9999;
+    }
     @media print {
       body {
         background: white;
         padding: 0;
       }
-      /* Menyembunyikan input header, input file, dan tombol pagination saat print */
       .header-input,
       #fileInput,
       .pagination {
@@ -85,22 +93,26 @@
         margin-top: 0;
       }
       img {
-        height: 8cm; /* Ukuran gambar disesuaikan untuk print */
+        height: 8cm;
         width: auto;
-
+      }
+      /* Hide watermark during print */
+      .watermark {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Bagian Header untuk menampilkan nama dan NPM -->
+  <!-- Watermark -->
+  <div class="watermark">COPYRIGHT &copy; CODEVAN By RIVAN</div>
+  
+  <!-- Header -->
   <div class="header">
-    <!-- Tampilan header yang akan muncul saat print -->
     <div class="header-display">
       <p id="displayName">Nama</p>
       <p id="displayNPM">NPM</p>
     </div>
-    <!-- Input agar pengguna dapat memasukkan nama dan NPM -->
     <div class="header-input">
       <input type="text" id="nameInput" placeholder="MISAL = ASHAR JANGAN MALAS" oninput="updateHeaderDisplay()" />
       <input type="text" id="npmInput" placeholder="Masukkan NPM" oninput="updateHeaderDisplay()" />
@@ -152,22 +164,16 @@
             headerCell.style.textAlign = 'left';
             headerCell.style.fontFamily = "'Times New Roman', Times, serif";
             headerCell.style.padding = "4px 10px";
-            
-            // Force baris ini ke halaman baru
             headerCell.style.pageBreakBefore = 'always';
             headerCell.style.breakBefore = 'page';
-            
-            // Gabungkan Nama dan NPM dengan line break
             const currentName = document.getElementById('displayName').textContent;
             const currentNPM = document.getElementById('displayNPM').textContent;
             headerCell.innerHTML = currentName + "<br>" + currentNPM;
           }
-          // Buat baris baru untuk menampung gambar
           row = table.insertRow();
           imageRowCount++;
         }
         
-        // Buat sel untuk gambar
         const cell = row.insertCell();
         const reader = new FileReader();
         reader.onload = function(e) {
