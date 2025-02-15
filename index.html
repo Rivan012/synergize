@@ -1,1 +1,183 @@
-<b>MAINTENANCE</b>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Galeri Gambar 4x3 (Ukuran Gambar 9cm)</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      height: 100vh;
+    }
+    .header {
+      text-align: left;
+      margin-left: 20px;
+      font-family: 'Times New Roman', Times, serif;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    /* Menghilangkan margin default dari elemen <p> di dalam header-display */
+    .header-display p {
+      margin: 0;
+    }
+    /* Styling untuk input agar menyerupai teks header */
+    .header-input input {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 18px;
+      border: none;
+      outline: none;
+      background: transparent;
+      margin-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      margin-top: 0;
+    }
+    td {
+      width: 25%; /* Membagi setiap kolom 1/4 untuk 4 kolom */
+      padding: 0;
+      text-align: center;
+      vertical-align: top;
+    }
+    img {
+      height: 9cm;
+      width: auto;
+      object-fit: cover;
+
+      display: block;
+    }
+    .pagination {
+      margin: 20px 0;
+    }
+    .pagination button {
+      padding: 10px 20px;
+      margin: 0 5px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+    .pagination button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      /* Menyembunyikan input header, input file, dan tombol pagination saat print */
+      .header-input,
+      #fileInput,
+      .pagination {
+        display: none;
+      }
+      table {
+        width: 100%;
+        margin-top: 0;
+      }
+      img {
+        height: 8cm; /* Ukuran gambar disesuaikan untuk print */
+        width: auto;
+
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Bagian Header untuk menampilkan nama dan NPM -->
+  <div class="header">
+    <!-- Tampilan header yang akan muncul saat print -->
+    <div class="header-display">
+      <p id="displayName">Nama</p>
+      <p id="displayNPM">NPM</p>
+    </div>
+    <!-- Input agar pengguna dapat memasukkan nama dan NPM -->
+    <div class="header-input">
+      <input type="text" id="nameInput" placeholder="Masukkan Nama" oninput="updateHeaderDisplay()" />
+      <input type="text" id="npmInput" placeholder="Masukkan NPM" oninput="updateHeaderDisplay()" />
+    </div>
+  </div>
+  
+  <!-- Input file gambar -->
+  <input type="file" id="fileInput" multiple accept="image/*" />
+  
+  <!-- Tabel untuk menampilkan gambar -->
+  <table id="imageTable"></table>
+  
+  <!-- Tombol print -->
+  <div class="pagination">
+    <button onclick="window.print()">Print</button>
+  </div>
+  
+  <script>
+    // Fungsi untuk mengupdate tampilan header berdasarkan input
+    function updateHeaderDisplay() {
+      const name = document.getElementById('nameInput').value;
+      const npm = document.getElementById('npmInput').value;
+      document.getElementById('displayName').textContent = name || 'Nama';
+      document.getElementById('displayNPM').textContent = npm || 'NPM';
+    }
+    
+    let images = [];
+    
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      images = Array.from(event.target.files);
+      renderImages();
+    });
+    
+    function renderImages() {
+      const table = document.getElementById('imageTable');
+      table.innerHTML = ''; // Bersihkan tabel sebelum mengisi ulang
+      
+      let imageRowCount = 0; // Menghitung jumlah baris gambar (tiap baris isi 4 gambar)
+      let row;
+
+      images.forEach((file, index) => {
+        // Jika index bergeser ke baris baru (tiap 4 gambar)
+        if (index % 4 === 0) {
+          // Sudah 3 baris gambar? Sisipkan baris Nama + NPM di halaman baru
+          if (imageRowCount > 0 && imageRowCount % 3 === 0) {
+            const headerRow = table.insertRow();
+            const headerCell = headerRow.insertCell();
+            headerCell.colSpan = 4;
+            headerCell.style.textAlign = 'left';
+            headerCell.style.fontFamily = "'Times New Roman', Times, serif";
+            headerCell.style.padding = "4px 10px";
+            
+            // Force baris ini ke halaman baru
+            headerCell.style.pageBreakBefore = 'always';
+            headerCell.style.breakBefore = 'page';
+            
+            // Gabungkan Nama dan NPM dengan line break
+            const currentName = document.getElementById('displayName').textContent;
+            const currentNPM = document.getElementById('displayNPM').textContent;
+            headerCell.innerHTML = currentName + "<br>" + currentNPM;
+          }
+          // Buat baris baru untuk menampung gambar
+          row = table.insertRow();
+          imageRowCount++;
+        }
+        
+        // Buat sel untuk gambar
+        const cell = row.insertCell();
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          cell.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
