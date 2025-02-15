@@ -113,22 +113,26 @@
       <p id="displayName">Nama</p>
       <p id="displayNPM">NPM</p>
     </div>
-    <div class="header-input  card p-2 justify-content-center">
-      <input type="text" class="form-control" id="nameInput" placeholder="MISAL = ASHAR JANGAN MALAS" oninput="updateHeaderDisplay()" />
-      <input type="text" class="form-control" id="npmInput" placeholder="Masukkan NPM" oninput="updateHeaderDisplay()" />
+    <div class="header-input card p-2 justify-content-center">
+      <input type="text" class="form-control" id="nameInput" placeholder="NAMA MASUKI DULU YOOOO" oninput="updateHeaderDisplay()" />
+      <input type="text" class="form-control" id="npmInput" placeholder="NPM KAU JUGO JANGAN LUPA" oninput="updateHeaderDisplay()" />
       <input type="file" class="form-control" id="fileInput" multiple accept="image/*" />
-  <div class="pagination d-grid gap-2">
-    <button class="btn btn-primary btn-block" onclick="window.print()">Print</button>
-  </div>
+    </div>
+    
+    <!-- Tombol Instagram -->
+    <div class="pagination d-grid gap-2" id="instagramBtnDiv">
+      <button class="btn btn-danger btn-block" id="instagramBtn" onclick="openInstagram()">Buka Instagram</button>
+    </div>
 
+    <!-- Tombol Print (Tombol Disabled Awalnya) -->
+    <div class="pagination d-grid gap-2" id="printBtnDiv" style="display: none;">
+      <button class="btn btn-primary btn-block" id="printBtn" onclick="window.print()" disabled>Print</button>
     </div>
   </div>
   
   <!-- Tabel untuk menampilkan gambar -->
   <table id="imageTable" style="border:none;"></table>
   
-  <!-- Tombol print -->
-
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
   <script>
@@ -184,6 +188,17 @@
         };
         reader.readAsDataURL(file);
       });
+    }
+    
+    // Fungsi untuk membuka Instagram dan mengaktifkan tombol Print
+    function openInstagram() {
+      window.open("https://www.instagram.com/codevan_", "_blank");
+      
+      // Menampilkan tombol print setelah membuka Instagram dan mengaktifkan tombol print
+      document.getElementById('instagramBtnDiv').style.display = 'none';
+      const printBtn = document.getElementById('printBtn');
+      printBtn.disabled = false; // Mengaktifkan tombol print
+      document.getElementById('printBtnDiv').style.display = 'block';
     }
   </script>
 </body>
