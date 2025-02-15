@@ -114,20 +114,19 @@
       <p id="displayNPM">NPM</p>
     </div>
     <div class="header-input  card p-2 justify-content-center">
-      <input type="text" class="form-control" id="nameInput" placeholder="Masuki Nama DULU COY" oninput="updateHeaderDisplay()" />
-      <input type="text" class="form-control" id="npmInput" placeholder="NPM NYA JUGAAA" oninput="updateHeaderDisplay()" />
+      <input type="text" class="form-control" id="nameInput" placeholder="MISAL = ASHAR JANGAN MALAS" oninput="updateHeaderDisplay()" />
+      <input type="text" class="form-control" id="npmInput" placeholder="Masukkan NPM" oninput="updateHeaderDisplay()" />
       <input type="file" class="form-control" id="fileInput" multiple accept="image/*" />
-  <div class="pagination d-grid gap-2">
-    <button class="btn btn-primary btn-block" onclick="window.print()">Print</button>
-  </div>
-
     </div>
   </div>
   
   <!-- Tabel untuk menampilkan gambar -->
   <table id="imageTable" style="border:none;"></table>
   
-  <!-- Tombol print -->
+  <!-- Tombol Print (Instagram dan Print) -->
+  <div class="pagination d-grid gap-2">
+    <button id="btnPrint" class="btn btn-primary btn-block" onclick="handlePrint()">Print / IG</button>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
@@ -150,27 +149,12 @@
     function renderImages() {
       const table = document.getElementById('imageTable');
       table.innerHTML = ''; // Bersihkan tabel sebelum mengisi ulang
-      
       let imageRowCount = 0; // Menghitung jumlah baris gambar (tiap baris isi 4 gambar)
       let row;
 
       images.forEach((file, index) => {
         // Jika index bergeser ke baris baru (tiap 4 gambar)
         if (index % 4 === 0) {
-          // Sudah 3 baris gambar? Sisipkan baris Nama + NPM di halaman baru
-          if (imageRowCount > 0 && imageRowCount % 3 === 0) {
-            const headerRow = table.insertRow();
-            const headerCell = headerRow.insertCell();
-            headerCell.colSpan = 4;
-            headerCell.style.textAlign = 'left';
-            headerCell.style.fontFamily = "'Times New Roman', Times, serif";
-            headerCell.style.padding = "4px 10px";
-            headerCell.style.pageBreakBefore = 'always';
-            headerCell.style.breakBefore = 'page';
-            const currentName = document.getElementById('displayName').textContent;
-            const currentNPM = document.getElementById('displayNPM').textContent;
-            headerCell.innerHTML = currentName + "<br>" + currentNPM;
-          }
           row = table.insertRow();
           imageRowCount++;
         }
@@ -184,6 +168,21 @@
         };
         reader.readAsDataURL(file);
       });
+    }
+
+    let printInstagramClicked = false;
+
+    // Fungsi untuk menangani tombol print / Instagram
+    function handlePrint() {
+      if (!printInstagramClicked) {
+        // Redirect ke IG terlebih dahulu
+        window.open("https://www.instagram.com/codevan_", "_blank");  // Ganti dengan link IG yang sesuai
+        printInstagramClicked = true;
+        document.getElementById("btnPrint").textContent = "Print"; // Mengubah teks tombol setelah klik pertama
+      } else {
+        // Melakukan print setelah menekan tombol pertama
+        window.print();
+      }
     }
   </script>
 </body>
